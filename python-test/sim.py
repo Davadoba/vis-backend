@@ -31,7 +31,7 @@ def createdf():
 
     simLength:float = 5.0       # how many seconds to run the simulation for
     simStepsPerSec:int = 100    # how many simulation steps per second
-    rowcount = simLength * simStepsPerSec
+    rowcount = int(simLength * simStepsPerSec)
 
     data_columns = (
         "Acc Temp 1(Cel);"
@@ -124,7 +124,6 @@ def createdf():
 
     column_names = data_columns.split(";")
     total_cols = len(column_names)
-    table = [rowcount][total_cols]
 
     # Initialize the data array
     data = np.zeros((rowcount, total_cols))
@@ -143,8 +142,11 @@ def createdf():
 
     # Brake Pressure
     data[:int(300), 56:58] = 0  # First 3 seconds are zero
-    data[300:, 56] = (np.arange(300, rowcount) / simStepsPerSec) * 0.5 - 3  # Arbitrary equation for brake pressure
-
+    for t in range(300, 500): #Hard-coded for now because time crunch
+        num = float(t)/100.0 * 0.5 - 3 #Arbitrary Brake Pressure EQ
+        data[56] = num
+        data[57] = num
+    
     # Current to Acc
     total_voltage = 6000  # Arbitrary voltage
     resistance = 50  # Arbitrary resistance
@@ -173,3 +175,5 @@ def createdf():
     data[:, 73:] = 0
 
     return pl.DataFrame(data, schema = column_names)
+
+createdf()
